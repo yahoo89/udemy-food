@@ -14,6 +14,7 @@ window.addEventListener('DOMContentLoaded', () => {
       item.classList.remove('show', 'fade');
     });
 
+
     tabs.forEach(item => {
       item.classList.remove('tabheader__item_active');
     });
@@ -213,5 +214,47 @@ window.addEventListener('DOMContentLoaded', () => {
     '.menu .container',
     'menu__item',
   ).render();
+
+  // FORMS
+
+  const forms = document.querySelectorAll('form');
+  const messeges = {
+    loading: 'Downloading',
+    success: 'Thanks! We will contact you!',
+    failure: 'Something went wrong...'
+  }
+
+  forms.forEach(item => {
+    postData(item);
+  });
+
+  function postData(form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const statusMessage = document.createElement('div');
+      statusMessage.classList.add('status');
+      statusMessage.textContent = messeges.loading;
+
+      form.append(statusMessage);
+
+      const request = new XMLHttpRequest();
+      request.open('POST', 'server.php');
+
+      request.setRequestHeader('Content-type', 'multipart/form-data');
+      const formData = new FormData(form);
+
+      request.send(formData);
+
+      request.addEventListener('load', () => {
+        if (request.status === 200) {
+          console.log(request.response);
+          statusMessage.textContent = messeges.success;
+        } else {
+          statusMessage.textContent = messeges.failure;
+        }
+      });
+    });
+  }
 
 });
